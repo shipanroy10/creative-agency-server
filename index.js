@@ -50,30 +50,24 @@ client.connect(err => {
     const name = req.body.name;
     const description = req.body.description;
     const companyName = req.body.companyName;
-    console.log(file, name, companyName, description);
-    const filePath = `${__dirname}/feedbacks/${file.name}`
-    file.mv(filePath, err => {
-      if (err) {
-        console.log(err)
-      }
-      const newImg = fs.readFileSync(filePath);
-      const encImg = newImg.toString('base64');
-      let image = {
-        contentType: req.files.file.mimetype,
-        size: req.files.file.size,
-        img: Buffer(encImg, 'base64')
-      }
-      reviewCollection.insertOne({ name, companyName, description, image })
-        .then(result => {
-          fs.remove(filePath, error => {
-            if (error) { console.log(error) }
-            res.status(5000).send({ msg: 'failed to upload image' })
 
-            res.send(result.insertedCount > 0)
-          })
 
-        })
-    })
+
+    const newImg = file.data;
+    const encImg = newImg.toString('base64');
+    var image = {
+      contentType: file.mimetype,
+      size: file.size,
+      img: Buffer.from(encImg, 'base64')
+    };
+
+    reviewCollection.insertOne({ name, companyName, description, image })
+      .then(result => {
+
+
+        res.send(result.insertedCount > 0)
+      })
+
 
 
   })
@@ -85,30 +79,23 @@ client.connect(err => {
     const name = req.body.name;
     const email = req.body.email;
     const description = req.body.description;
-    console.log(file, name, description, email);
-    const filePath = `${__dirname}/services/${file.name}`
-    file.mv(filePath, err => {
-      if (err) {
-        console.log(err)
-      }
-      const newImg = fs.readFileSync(filePath);
-      const encImg = newImg.toString('base64');
-      var image = {
-        contentType: req.files.file.mimetype,
-        size: req.files.file.size,
-        img: Buffer(encImg, 'base64')
-      }
-      newServiceCollection.insertOne({ name, description, image, email })
-        .then(result => {
-          fs.remove(filePath, error => {
-            if (error) { console.log(error) }
-            res.status(5000).send({ msg: 'failed to upload image' })
+    const newImg = file.data;
 
-            res.send(result.insertedCount > 0)
-          })
+    const encImg = newImg.toString('base64');
+    var image = {
+      contentType: file.mimetype,
+      size: file.size,
+      img: Buffer.from(encImg, 'base64')
+    };
 
-        })
-    })
+    newServiceCollection.insertOne({ name, description, image, email })
+      .then(result => {
+        res.send(result.insertedCount > 0)
+      })
+
+
+
+
   })
 
   // conforming about admin
@@ -159,4 +146,4 @@ client.connect(err => {
 });
 
 
-app.listen(port)
+app.listen(process.env.PORT || port)
