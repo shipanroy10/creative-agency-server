@@ -113,6 +113,9 @@ client.connect(err => {
   app.get('/services', (req, res) => {
     newServiceCollection.find({})
       .toArray((err, documents) => {
+        if(err){
+          res.status(400).send(err)
+        }
         res.send(documents)
       })
   })
